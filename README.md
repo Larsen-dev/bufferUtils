@@ -11,7 +11,7 @@ Also has built-in:
 - CFrame bufferisation functions;
 
 # Limits
-For simple in-table values it's something near 1724 elements (tested on storing 32 bit signed integers) per table. As I can see, there's no limits for nested tables, but I
+Due to last test limits on simple elements grew up: tried on storing 60000 32 bit signed integers. As I can see, there's no limits for nested tables, but I
 don't recommend you to abuse this.
 
 Now work with EncodingService.

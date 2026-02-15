@@ -14,4 +14,4 @@ Also has built-in:
 For simple in-table values it's something near 1724 elements (tested on storing 32 bit signed integers) per table. As I can see, there's no limits for nested tables, but I
 don't recommend you to abuse this.
 
-Also it wasn't tested with EncodingService, so I don't know, how it would be compressed.
+Now work with EncodingService.

@@ -4,7 +4,7 @@
 -- Values
 local intSizes = { 8, 16, 32 }
 
-local accessedTypes = { "boolean", "number", "string", "Vector3", "Vector2", "CFrame", "table", "buffer", "Enum", "EnumItem", "Instance" }
+local accessedTypes = { "boolean", "number", "string", "Vector3", "Vector2", "CFrame", "table", "buffer", "Instance" }
 
 local indexes = {
 	boolean = 0,
@@ -19,9 +19,7 @@ local indexes = {
 	["CFrame"] = 9,
 	["table"] = 10,
 	["buffer"] = 11,
-	["Enum"] = 12,
-	["EnumItem"] = 13,
-	["Instance"] = 14,
+	["Instance"] = 12,
 }
 
 local sizes = {
@@ -35,8 +33,6 @@ local sizes = {
 	["Vector3"] = 192,
 	["Vector2"] = 64,
 	["CFrame"] = 384,
-	["Enum"] = 10,
-	["EnumItem"] = 12
 }
 
 -- Functions
@@ -595,138 +591,6 @@ function stringToBuffer.read(b: buffer, scopeOffset: number?, offset: number?): 
 	return buffer.tostring(strBuffer)
 end
 
--- Enum To Buffer
-local enumToBuffer = {}
-enumToBuffer.enums = Enum:GetEnums()
-
---[=[
-	@param enum Enum;
-	
-	@return buffer;
-	
-	Converts given enum to buffer.
-]=]
-function enumToBuffer.convert(enum: Enum): buffer
-	local indexOfEnum = table.find(enumToBuffer.enums, enum)
-	if not indexOfEnum then error("No such Enum.") end
-
-	local enumBuffer = buffer.create(2)
-	buffer.writebits(enumBuffer, 0, 10, indexOfEnum)
-
-	return enumBuffer
-end
-
---[=[
-	@param b buffer;
-	@param enum Enum;
-	@param offset number?;
-	
-	@return ;
-	
-	Writes given enum to buffer at given offset.
-]=]
-function enumToBuffer.write(b: buffer, enum: Enum, offset: number?)
-	offset = offset or 0
-
-	if buffer.len(b) * 8 - offset < 10 then
-		error(string.format("buffer's length %d is not enough.", buffer.len(b) * 8))
-	end
-
-	local indexOfEnum = table.find(enumToBuffer.enums, enum)
-	if not indexOfEnum then error("No such Enum.") end
-
-	buffer.writebits(b, offset, 10, indexOfEnum)
-end
-
---[=[
-	@param b buffer;
-	@param offset number?;
-	
-	@return Enum;
-	
-	Reads enum from buffer at given offset.
-]=]
-function enumToBuffer.read(b: buffer, offset: number?): Enum
-	offset = offset or 0
-
-	if buffer.len(b) * 8 - offset < 10 then
-		error(string.format("buffer's length %d is not enough.", buffer.len(b) * 8))
-	end
-
-	local indexOfEnum = buffer.readbits(b, offset, 10)
-
-	return enumToBuffer.enums[indexOfEnum]
-end
-
--- EnumItem To Buffer
-local enumItemToBuffer = {}
-enumItemToBuffer.enumsValues = {} :: { EnumItem }
-
-for _, enum in ipairs(Enum:GetEnums()) do
-	for _, enumItem in ipairs(enum:GetEnumItems()) do
-		table.insert(enumItemToBuffer.enumsValues, enumItem)
-	end
-end
-
---[=[
-	@param enumItem EnumItem;
-	
-	@return buffer;
-	
-	Converts given enumItem item to buffer.
-]=]
-function enumItemToBuffer.convert(enumItem: EnumItem): buffer
-	local indexOfEnumItem = table.find(enumItemToBuffer.enumsValues, enumItem)
-	if not indexOfEnumItem then error("No such EnumItem.") end
-
-	local enumItemBuffer = buffer.create(2)
-	buffer.writebits(enumItemBuffer, 0, 12, indexOfEnumItem)
-
-	return enumItemBuffer
-end
-
---[=[
-	@param b buffer;
-	@param enumItem EnumItem;
-	@param offset number?;
-	
-	@return ;
-	
-	Writes given enumItem to buffer at given offset.
-]=]
-function enumItemToBuffer.write(b: buffer, enumItem: EnumItem, offset: number?)
-	offset = offset or 0
-
-	if buffer.len(b) * 8 - offset < 12 then
-		error(string.format("buffer's length %d is not enough.", buffer.len(b) * 8))
-	end
-
-	local indexOfEnumItem = table.find(enumItemToBuffer.enumsValues, enumItem)
-	if not indexOfEnumItem then error("No such EnumItem.") end
-
-	buffer.writebits(b, offset, 12, indexOfEnumItem)
-end
-
---[=[
-	@param b buffer;
-	@param offset number?;
-	
-	@return EnumItem;
-	
-	Reads some enumItem from a given buffer at given in bits offset.
-]=]
-function enumItemToBuffer.read(b: buffer, offset: number?): EnumItem
-	offset = offset or 0
-
-	if buffer.len(b) * 8 - offset < 12 then
-		error(string.format("buffer's length %d is not enough.", buffer.len(b) * 8))
-	end
-
-	local indexOfEnumItem = buffer.readbits(b, offset, 12)
-
-	return enumItemToBuffer.enumsValues[indexOfEnumItem]
-end
-
 -- Values
 local SCOPE_SIZE = 28
 
@@ -897,10 +761,6 @@ local function writeKey(b: buffer, scopeOffset: number, offset: number, key: acc
 		buffer.writebits(b, offset, 1, key == true and 1 or 0)
 	elseif keyType == "buffer" then
 		copyBuffer(b, key :: buffer, offset)
-	elseif keyType == "Enum" then
-		enumToBuffer.write(b, key :: Enum, offset)
-	elseif keyType == "EnumItem" then
-		enumItemToBuffer.write(b, key :: EnumItem, offset)
 	elseif keyType == "Instance" then
 		local pathToInstance = instancePath(key :: Instance, {})
 
@@ -982,10 +842,6 @@ local function writeValue(b: buffer, scopeOffset: number, offset: number, value:
 		end
 	elseif valueType == "buffer" then
 		copyBuffer(b, value :: buffer, offset)
-	elseif valueType == "Enum" then
-		enumToBuffer.write(b, value :: Enum, offset)
-	elseif valueType == "EnumItem" then
-		enumItemToBuffer.write(b, value :: EnumItem, offset)
 	elseif valueType == "Instance" then
 		local pathToInstance = instancePath(value :: Instance, {})
 
@@ -1121,10 +977,6 @@ function tableToBuffer.read(b: buffer, scopesOffset: number?, offset: number?): 
 			key = readFloat64(b, offset)
 		elseif descriptor.keyIndex == indexes["buffer"] then
 			key = readCopiedBuffer(b, descriptor.keySize, offset)
-		elseif descriptor.keyIndex == indexes["Enum"] then
-			key = enumToBuffer.read(b, offset)
-		elseif descriptor.keyIndex == indexes["EnumItem"] then
-			key = enumItemToBuffer.read(b, offset)
 		elseif descriptor.keyIndex == indexes["Instance"] then
 			key = game
 
@@ -1169,10 +1021,6 @@ function tableToBuffer.read(b: buffer, scopesOffset: number?, offset: number?): 
 			value = tableToBuffer.read(b, offset)
 		elseif descriptor.valueIndex == indexes["buffer"] then
 			value = readCopiedBuffer(b, descriptor.valueSize, offset)
-		elseif descriptor.valueIndex == indexes["Enum"] then
-			value = enumToBuffer.read(b, offset)
-		elseif descriptor.valueIndex == indexes["EnumItem"] then
-			value = enumItemToBuffer.read(b, offset)
 		elseif descriptor.valueIndex == indexes["Instance"] then
 			value = game
 
@@ -1212,6 +1060,4 @@ return table.freeze({
 	vector3ToBuffer = vector3ToBuffer,
 	vector2ToBuffer = vector2ToBuffer,
 	cframeToBuffer = cframeToBuffer,
-	enumToBuffer = enumToBuffer,
-	enumItemToBuffer = enumItemToBuffer,
 })

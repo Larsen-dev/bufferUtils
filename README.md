@@ -13,7 +13,7 @@ Also has built-in:
 
 ## Installation
 ```toml
-bufferUtils = "larsen-dev/bufferUtils@0.1.0"
+bufferUtils = "larsen-dev/bufferutils@0.1.0"
 ```
 
 ## Limits

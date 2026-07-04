@@ -1,5 +1,5 @@
 [package]
-name = "larsen/bufferUtils"
+name = "larsen-dev/bufferUtils"
 description = "Pack of buffer utils for different Lua types bufferization, including tables."
 keywords = ["buffer", "efficient"]
 version = "0.1.0"

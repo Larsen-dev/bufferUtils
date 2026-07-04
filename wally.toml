@@ -1,0 +1,23 @@
+[package]
+name = "larsen/bufferUtils"
+description = "Pack of buffer utils for different Lua types bufferization, including tables."
+keywords = ["buffer", "efficient"]
+version = "0.1.0"
+license = "MIT"
+authors = ["Larsen-dev"]
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+repository = "https://github.com/Larsen-dev/bufferUtils"
+
+exclude = [
+    ".github",
+    ".gitignore",
+    "README.md",
+    "aftman.toml",
+    "selene.toml",
+    "roblox.yml",
+    "default.project.json",
+    "*.spec.luau"
+]
+
+[dependencies]

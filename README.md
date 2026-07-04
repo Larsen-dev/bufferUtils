@@ -1,5 +1,5 @@
 # bufferUtils
-Simple utility to convert mixed lua/luau tables to buffers. Can store: numbers, strings, Vector3s, Vector2s, CFrames, buffers, Instances and nested tables.
+bufferUtils is a lightweight Luau library that converts complex tables (including Roblox datatypes like Vector3 and CFrame) into buffers. Good for networking, saving, and data transmission in Roblox experiences.
 
 Created for people who don't want to use libraries as ByteNet, but stores table less-efficient than ByteNet do it, because of scopes written at the start of the buffer, so table
 could be serialised back. Table store scheme looks like:

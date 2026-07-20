@@ -823,7 +823,7 @@ local function writeValue(b: buffer, scopeOffset: number, offset: number, value:
 	elseif valueType == "boolean" then
 		buffer.writebits(b, offset, 1, value == true and 1 or 0)
 	elseif valueType == "table" then
-		local valueSize, valueScopesSize = tableToBufferSize(value :: t)
+		local _, valueScopesSize = tableToBufferSize(value :: t)
 
 		local valueScopeOffset = offset + 24
 		local valueOffset = offset + 24 + valueScopesSize
@@ -874,7 +874,7 @@ end
 	scopesSize (24) -> scopes (every 28 bit) -> key -> value.
 ]=]
 function tableToBuffer.convert(t: t): buffer
-	local size, scopesSize, sizeInBytes = tableToBuffer.size(t)
+	local _, scopesSize, sizeInBytes = tableToBuffer.size(t)
 	local tBuffer = buffer.create(sizeInBytes)
 
 	local scopesOffset = 24
@@ -891,7 +891,7 @@ function tableToBuffer.convert(t: t): buffer
 end
 
 function tableToBuffer.write(b: buffer, t: t, scopesOffset: number?, offset: number?)
-	local size, scopesSize, sizeInBytes = tableToBuffer.size(t)
+	local size, scopesSize, _ = tableToBuffer.size(t)
 
 	scopesOffset = scopesOffset or 24
 	offset = offset or scopesSize + 24

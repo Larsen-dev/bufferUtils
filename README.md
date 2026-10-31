@@ -11,6 +11,9 @@ Also has built-in:
 - Vector2 bufferisation functions;
 - CFrame bufferisation functions;
 
+> [!WARNING]
+> Yet library haven't been properly tested, certain methods might not work or ruin result buffer structure as well. For example library yet can't properly store Instance type in buffers, sometimes mantissa bits in float numbers might be lower a little and etc.
+
 ## Installation
 ```toml
 bufferUtils = "larsen-dev/bufferutils@0.1.0"

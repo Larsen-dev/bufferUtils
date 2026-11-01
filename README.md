@@ -1,15 +1,18 @@
 # bufferUtils
-bufferUtils is a lightweight Luau library that converts complex tables (including Roblox datatypes like Vector3 and CFrame) into buffers. Good for networking, saving, and data transmission in Roblox experiences.
+bufferUtils is a lightweight Luau library that converts complex tables (including Roblox datatypes like Vectors and CFrame) into buffers. I'm trying to make it be able to convert data with minimal-loss and the result buffer be as small as it's possible for optimal network transfers, saving in DataStores, etc.
 
-Created for people who don't want to use libraries as ByteNet, but stores table less-efficient than ByteNet do it, because of scopes written at the start of the buffer, so table
-could be serialised back. Table store scheme looks like:
+Because of dynamical convertion result buffer might be much bigger than the known ByteNet library might produce. Not recommended to use such in FPS online games, fast state-based games, etc. where speed is crucial. While I'm working on this library I don't recommend you to use it for DataStore either, because later the scheme might change and not be able to reconvert buffer.
+Table store scheme looks like:
 `scopesSize (24 bits) -> scopes (28 for every) -> key -> value`
 
-Also has built-in:
-- strings bufferisation functions;
-- Vector3 bufferisation functions;
-- Vector2 bufferisation functions;
-- CFrame bufferisation functions;
+Library has built-in convertion functions for:
+- strings;
+- Vector2 and Vector3;
+- CFrame;
+- buffer (simple copying);
+
+> [!WARNING]
+> Yet library haven't been properly tested, certain methods might not work or ruin result buffer structure as well. For example library yet can't properly store Instance type in buffers, sometimes mantissa bits in float numbers might be lower a little and etc.
 
 ## Installation
 ```toml
